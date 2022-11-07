@@ -3,4 +3,4 @@ from django.http import HttpResponse
 
 def nova_empresa(request):
 
-    return HttpResponse('Hello World!')
+    return render(request, 'nova_empresa.html')
