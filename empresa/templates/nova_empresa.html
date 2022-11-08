@@ -14,9 +14,19 @@
             <div class="header">
                 <h3 class="titulo">Nova empresa</h3>
             </div>
+            
+            {% if messages %}
+            {% for message in messages %}
+            <br>
+                <section class="alert {{message.tags}}">
+                    {{message}}
+                </section>
+            {% endfor %}
+            {% endif %}
 
             <div class="body-box">
-                <form action="" method="" enctype="multipart/form-data">
+                <form action="{% url 'nova_empresa' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
                     <div class="row">
                         <div class="col-md">
                             <label>Nome:</label>
@@ -50,6 +60,12 @@
                                 <option value="M">Marketing</option>
                                 <option value="N">Nutrição</option>
                                 <option value="D">Design</option>
+                                <option value="E">Esporte</option>
+                                <option value="T">Tecnologia</option>
+                                <option value="En">Entretenimento</option>
+                                <option value="S">Saúde</option>
+                                <option value="Ed">Educação</option>
+                                <option value="B">Bebidas</option>
                             </select>
                         </div>
                     </div>
@@ -58,8 +74,9 @@
                         <div class="col-md">
                             <label>Tecnologias usadas:</label>
                             <select class="form-control" name="tecnologias" multiple>                                
-                                <option value=""></option>
-                                
+                                {% for tech in techs %}
+                                    <option value="{{tech.id}}">{{tech.tecnologia}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
