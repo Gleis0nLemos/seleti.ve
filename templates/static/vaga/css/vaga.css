@@ -35,6 +35,12 @@
     color: white;
 }
 
+.btn-orange:hover{
+
+    background-color: #c25929;
+    color: white;
+}
+
 .list-tarefa{
     list-style: none;
 }
