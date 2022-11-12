@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from empresa.models import Vagas
 from django.contrib import messages
 from django.contrib.messages import constants
-from .models import Tarefa
+from .models import Tarefa, Emails
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
@@ -48,7 +48,8 @@ def vaga(request, id):
     
     vaga = get_object_or_404(Vagas, id=id) 
     tarefas = Tarefa.objects.filter(vaga=vaga).filter(realizada=False)
-    return render(request, 'vaga.html', {'vaga': vaga, 'tarefas': tarefas})
+    emails = Emails.objects.filter(vaga=vaga)
+    return render(request, 'vaga.html', {'vaga': vaga, 'tarefas': tarefas, 'emails': emails})
 
 def nova_tarefa(request, id_vaga):
 
@@ -99,10 +100,24 @@ def envia_email(request, id_vaga):
 
     if email.send():  
 
+        mail = Emails(
+        vaga=vaga,
+        assunto=assunto,
+        corpo=corpo,
+        enviado=True
+        )
+        mail.save()
         messages.add_message(request, constants.SUCCESS, 'Email enviado com sucesso.')
         return redirect(f'/vagas/vaga/{id_vaga}')
         
     else:
 
+        mail = Emails(
+                vaga=vaga,
+                assunto=assunto,
+                corpo=corpo,
+                enviado=False
+                )
+        mail.save()       
         messages.add_message(request, constants.ERROR, 'Erro interno do sistema!')
         return redirect(f'/vagas/vaga/{id_vaga}')
