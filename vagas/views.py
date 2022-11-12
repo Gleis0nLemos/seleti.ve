@@ -42,8 +42,9 @@ def nova_vaga(request):
 
 def vaga(request, id):
     
-    vaga = get_object_or_404(Vagas, id=id)
-    return render(request, 'vaga.html', {'vaga': vaga})
+    vaga = get_object_or_404(Vagas, id=id) 
+    tarefas = Tarefa.objects.filter(vaga=vaga).filter(realizada=False)
+    return render(request, 'vaga.html', {'vaga': vaga, 'tarefas': tarefas})
 
 def nova_tarefa(request, id_vaga):
 
@@ -60,10 +61,23 @@ def nova_tarefa(request, id_vaga):
                         prioridade=prioridade,
                         data=data)
         tarefa.save()
-        messages.add_message(request, constants.SUCCESS, 'Tarefa adicionada com sucesso')
+        messages.add_message(request, constants.SUCCESS, 'Tarefa adiciona com sucesso')
         return redirect(f'/vagas/vaga/{id_vaga}')
 
     except:
 
         messages.add_message(request, constants.ERROR, 'Erro interno do sistema')
         return redirect(f'/vagas/vaga/{id_vaga}')
+
+def realizar_tarefa(request, id):
+    tarefas_list = Tarefa.objects.filter(id=id).filter(realizada=False)
+
+    if not tarefas_list.exists():
+        messages.add_message(request, constants.ERROR, 'Realize apenas uma tarefa válida!')
+        return redirect(f'/home/empresas/')
+
+    tarefa = tarefas_list.first()
+    tarefa.realizada = True
+    tarefa.save()    
+    messages.add_message(request, constants.SUCCESS, 'Tarefa realizada com sucesso, parabéns!')
+    return redirect(f'/vagas/vaga/{tarefa.vaga.id}')
